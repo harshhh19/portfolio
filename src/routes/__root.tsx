@@ -9,16 +9,30 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import appCss from '../styles.css?url'
 
-const getTheme = createServerFn({ method: 'GET' }).handler(async () => {
-  return {
-    variant: getCookie('theme') || 'rust',
-    mode: getCookie('colorMode') || 'dark', // default to dark
+const getTheme = () => {
+  if (typeof document !== 'undefined') {
+    // Basic client-side cookie parsing
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=')
+      acc[key] = value
+      return acc
+    }, {} as Record<string, string>)
+    
+    return {
+      variant: cookies['theme'] || 'rust',
+      mode: cookies['colorMode'] || 'dark',
+    }
   }
-})
+  // Server-side (during SSG build) defaults
+  return {
+    variant: 'rust',
+    mode: 'dark',
+  }
+}
 
 export const Route = createRootRoute({
   loader: async () => {
-    const theme = await getTheme()
+    const theme = getTheme()
     return { theme }
   },
   head: () => ({

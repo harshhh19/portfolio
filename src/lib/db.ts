@@ -22,25 +22,25 @@ async function writeJson(filePath: string, data: any) {
   await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8')
 }
 
+import postsData from '../../data/posts.json'
+import projectsData from '../../data/projects.json'
+
 // ---------------------------------------------------------
 // POSTS
 // ---------------------------------------------------------
 
-export const getPosts = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const posts = await readJson<any>(postsFile)
-    // Sort newest first
-    return posts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-  })
+export const getPosts = async () => {
+  const posts = postsData as any[]
+  // Sort newest first
+  return posts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+}
 
-export const getPostBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async ({ data: slug }) => {
-    const posts = await readJson<any>(postsFile)
-    const post = posts.find((p) => p.slug === slug)
-    if (!post) throw new Error('Post not found')
-    return post
-  })
+export const getPostBySlug = async ({ data: slug }: { data: string }) => {
+  const posts = postsData as any[]
+  const post = posts.find((p) => p.slug === slug)
+  if (!post) throw new Error('Post not found')
+  return post
+}
 
 export const createPost = createServerFn({ method: 'POST' })
   .validator((post: any) => post)
@@ -90,11 +90,10 @@ export const deletePost = createServerFn({ method: 'POST' })
 // PROJECTS
 // ---------------------------------------------------------
 
-export const getProjects = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const projects = await readJson<any>(projectsFile)
-    return projects.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-  })
+export const getProjects = async () => {
+  const projects = projectsData as any[]
+  return projects.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
 
 export const createProject = createServerFn({ method: 'POST' })
   .validator((project: any) => project)
@@ -115,14 +114,12 @@ export const createProject = createServerFn({ method: 'POST' })
     return { success: true, id: newProject.id }
   })
 
-export const getProjectById = createServerFn({ method: 'GET' })
-  .validator((id: string) => id)
-  .handler(async ({ data: id }) => {
-    const projects = await readJson<any>(projectsFile)
-    const project = projects.find((p) => p.id === id)
-    if (!project) throw new Error('Project not found')
-    return project
-  })
+export const getProjectById = async ({ data: id }: { data: string }) => {
+  const projects = projectsData as any[]
+  const project = projects.find((p) => p.id === id)
+  if (!project) throw new Error('Project not found')
+  return project
+}
 
 export const updateProject = createServerFn({ method: 'POST' })
   .validator((project: any) => project)
