@@ -34,9 +34,11 @@ function Projects() {
 
       <div className="flex items-center justify-between mt-8">
         <SectionLabel number="03" label="HARDWARE & SOFTWARE" />
-        <CyberButton href="/admin/write-project" variant="blue" className="!p-2.5">
-          <Plus size={18} />
-        </CyberButton>
+        {import.meta.env.DEV && (
+          <CyberButton href="/admin/write-project" variant="blue" className="!p-2.5">
+            <Plus size={18} />
+          </CyberButton>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">

@@ -48,14 +48,16 @@ function BlogPost() {
         <Link to="/blog" className="font-mono text-xs text-muted-foreground hover:text-accent-blue uppercase tracking-widest no-underline inline-block">
           &larr; BACK TO TRANSMISSIONS
         </Link>
-        <div className="flex gap-4">
-          <CyberButton href={`/admin/edit-post/${post.slug}`} variant="blue" className="!py-1 !px-3 !text-xs">
-            EDIT
-          </CyberButton>
-          <CyberButton onClick={handleDelete} variant="rust" className="!py-1 !px-3 !text-xs">
-            DELETE
-          </CyberButton>
-        </div>
+        {import.meta.env.DEV && (
+          <div className="flex gap-4">
+            <CyberButton href={`/admin/edit-post/${post.slug}`} variant="blue" className="!py-1 !px-3 !text-xs">
+              EDIT
+            </CyberButton>
+            <CyberButton onClick={handleDelete} variant="rust" className="!py-1 !px-3 !text-xs">
+              DELETE
+            </CyberButton>
+          </div>
+        )}
       </div>
       
       <header className="mb-12">

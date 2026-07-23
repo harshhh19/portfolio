@@ -22,9 +22,11 @@ function BlogIndex() {
 
       <div className="flex items-center justify-between mt-8">
         <SectionLabel number="04" label="ENGINEERING LOGS" />
-        <CyberButton href="/admin/write" variant="rust" className="!p-2" title="New Post">
-          <Plus size={18} />
-        </CyberButton>
+        {import.meta.env.DEV && (
+          <CyberButton href="/admin/write" variant="rust" className="!p-2" title="New Post">
+            <Plus size={18} />
+          </CyberButton>
+        )}
       </div>
       
       <div className="flex flex-col gap-6 mt-6">

@@ -61,14 +61,16 @@ function ProjectDetail() {
           </CyberButton>
         )}
         
-        <div className="ml-auto flex gap-2">
-           <CyberButton href={`/admin/edit-project/${project.id}`} variant="blue" className="!p-2.5" title="Edit Project">
-             <Edit3 size={18} className="inline" />
-           </CyberButton>
-           <CyberButton onClick={() => handleDelete(project.id)} variant="rust" className="!p-2.5" title="Delete Project">
-             <Trash2 size={18} className="inline" />
-           </CyberButton>
-        </div>
+        {import.meta.env.DEV && (
+          <div className="ml-auto flex gap-2">
+             <CyberButton href={`/admin/edit-project/${project.id}`} variant="blue" className="!p-2.5" title="Edit Project">
+               <Edit3 size={18} className="inline" />
+             </CyberButton>
+             <CyberButton onClick={() => handleDelete(project.id)} variant="rust" className="!p-2.5" title="Delete Project">
+               <Trash2 size={18} className="inline" />
+             </CyberButton>
+          </div>
+        )}
       </div>
 
       <div className="mt-8">
