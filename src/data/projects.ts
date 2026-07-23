@@ -1,0 +1,38 @@
+export interface Project {
+  id: string
+  title: string
+  date: string
+  summary: string
+  tags: string[]
+  github?: string
+  demo?: string
+  image?: string
+}
+
+export const PROJECTS: Project[] = [
+  {
+    id: 'cyber-deck',
+    title: 'Cyberdeck mk III',
+    date: '2025-11',
+    summary: 'A custom mechanical keyboard and integrated display housed in a 3D-printed chassis. Powered by a Raspberry Pi 5 with a custom embedded Linux distro.',
+    tags: ['Hardware', 'C++', 'Linux', '3D Printing'],
+    github: 'https://github.com/example/cyberdeck',
+  },
+  {
+    id: 'neural-synth',
+    title: 'Neural Synth Engine',
+    date: '2025-06',
+    summary: 'A polyphonic hardware synthesizer using a neural network for real-time waveform generation. Implemented on an FPGA.',
+    tags: ['Verilog', 'DSP', 'FPGA', 'Python'],
+    github: 'https://github.com/example/neural-synth',
+    demo: 'https://youtube.com/example',
+  },
+  {
+    id: 'mesh-net',
+    title: 'LoRa Mesh Comm',
+    date: '2024-12',
+    summary: 'Off-grid encrypted messaging system using LoRa radios and ESP32 microcontrollers. 10km range with multi-hop routing.',
+    tags: ['ESP32', 'C', 'Crypto', 'RF'],
+    github: 'https://github.com/example/mesh-net',
+  }
+]

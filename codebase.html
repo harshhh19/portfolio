@@ -1,0 +1,2591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Frontend Codebase</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h2 { margin-top: 40px; background: #f0f0f0; padding: 10px; }
+        pre { background: #2d2d2d; color: #ccc; padding: 15px; overflow-x: auto; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Codebase</h1>
+    <h2>File: src/components/Footer.tsx</h2>
+    <pre><code>import { useState, useEffect } from &#039;react&#039;
+
+export function Footer() {
+  const [uptime, setUptime] = useState(0)
+
+  useEffect(() =&gt; {
+    const interval = setInterval(() =&gt; {
+      setUptime((u) =&gt; u + 1)
+    }, 1000)
+    return () =&gt; clearInterval(interval)
+  }, [])
+
+  const hours = Math.floor(uptime / 3600)
+  const minutes = Math.floor((uptime % 3600) / 60)
+  const seconds = uptime % 60
+  const uptimeStr = [
+    hours.toString().padStart(2, &#039;0&#039;),
+    minutes.toString().padStart(2, &#039;0&#039;),
+    seconds.toString().padStart(2, &#039;0&#039;),
+  ].join(&#039;:&#039;)
+
+  return (
+    &lt;footer className=&quot;mt-16 py-6 border-t border-dashed border-foreground/15&quot;&gt;
+      &lt;div className=&quot;flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground tracking-wider uppercase&quot;&gt;
+        &lt;span className=&quot;flex items-center gap-1.5&quot;&gt;
+          &lt;span
+            className=&quot;inline-block w-1.5 h-1.5 rounded-full bg-accent-rust&quot;
+            style={{
+              boxShadow: &#039;0 0 4px oklch(58% 0.16 42 / 0.7)&#039;,
+            }}
+          /&gt;
+          ONLINE
+        &lt;/span&gt;
+        &lt;span className=&quot;text-foreground/20&quot;&gt;·&lt;/span&gt;
+        &lt;span&gt;UPTIME {uptimeStr}&lt;/span&gt;
+        &lt;span className=&quot;text-foreground/20&quot;&gt;·&lt;/span&gt;
+        &lt;span&gt;© {new Date().getFullYear()}&lt;/span&gt;
+        &lt;span className=&quot;text-foreground/20&quot;&gt;·&lt;/span&gt;
+        &lt;span&gt;v1.0.0&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/footer&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/Header.tsx</h2>
+    <pre><code>import { Link, useLocation } from &#039;@tanstack/react-router&#039;
+import { useState } from &#039;react&#039;
+import { DotMatrixText } from &#039;./primitives/DotMatrixText&#039;
+
+const NAV_LINKS = [
+  { to: &#039;/&#039;, label: &#039;Home&#039; },
+  { to: &#039;/about&#039;, label: &#039;About&#039; },
+  { to: &#039;/skills&#039;, label: &#039;Skills&#039; },
+  { to: &#039;/projects&#039;, label: &#039;Projects&#039; },
+  { to: &#039;/blog&#039;, label: &#039;Blog&#039; },
+  { to: &#039;/contact&#039;, label: &#039;Contact&#039; },
+] as const
+
+export function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const location = useLocation()
+
+  return (
+    &lt;header className=&quot;relative flex items-center justify-between py-5 border-b border-dashed border-foreground/10 mb-10&quot;&gt;
+      {/* Monogram */}
+      &lt;Link to=&quot;/&quot; className=&quot;no-underline&quot;&gt;
+        &lt;DotMatrixText size=&quot;sm&quot; glow=&quot;rust&quot; as=&quot;span&quot;&gt;
+          H.S
+        &lt;/DotMatrixText&gt;
+      &lt;/Link&gt;
+
+      {/* Desktop nav */}
+      &lt;nav className=&quot;hidden md:flex items-center gap-0.5&quot; aria-label=&quot;Main navigation&quot;&gt;
+        {NAV_LINKS.map((link) =&gt; {
+          const isActive =
+            link.to === &#039;/&#039;
+              ? location.pathname === &#039;/&#039;
+              : location.pathname.startsWith(link.to)
+
+          return (
+            &lt;Link
+              key={link.to}
+              to={link.to}
+              className={`
+                font-mono text-[10px] uppercase tracking-[0.14em]
+                px-2.5 py-1.5 no-underline transition-all duration-150
+                ${isActive
+                  ? &#039;text-accent-rust bg-accent-rust/[0.06]&#039;
+                  : &#039;text-muted-foreground hover:text-foreground hover:bg-foreground/[0.03]&#039;
+                }
+              `}
+            &gt;
+              {isActive ? `[ ${link.label} ]` : link.label}
+            &lt;/Link&gt;
+          )
+        })}
+      &lt;/nav&gt;
+
+      {/* Mobile hamburger */}
+      &lt;button
+        type=&quot;button&quot;
+        className=&quot;md:hidden p-2 text-foreground cursor-pointer&quot;
+        onClick={() =&gt; setMobileOpen(!mobileOpen)}
+        aria-label=&quot;Toggle navigation menu&quot;
+        aria-expanded={mobileOpen}
+      &gt;
+        &lt;svg width=&quot;18&quot; height=&quot;18&quot; viewBox=&quot;0 0 18 18&quot; fill=&quot;currentColor&quot;&gt;
+          {mobileOpen ? (
+            &lt;path d=&quot;M4 4L14 14M14 4L4 14&quot; stroke=&quot;currentColor&quot; strokeWidth=&quot;1.5&quot; fill=&quot;none&quot; /&gt;
+          ) : (
+            &lt;&gt;
+              &lt;rect x=&quot;2&quot; y=&quot;4&quot; width=&quot;14&quot; height=&quot;1.5&quot; rx=&quot;0.5&quot; /&gt;
+              &lt;rect x=&quot;2&quot; y=&quot;8.5&quot; width=&quot;14&quot; height=&quot;1.5&quot; rx=&quot;0.5&quot; /&gt;
+              &lt;rect x=&quot;2&quot; y=&quot;13&quot; width=&quot;14&quot; height=&quot;1.5&quot; rx=&quot;0.5&quot; /&gt;
+            &lt;/&gt;
+          )}
+        &lt;/svg&gt;
+      &lt;/button&gt;
+
+      {/* Mobile nav dropdown */}
+      {mobileOpen &amp;&amp; (
+        &lt;nav
+          className=&quot;absolute top-full left-0 right-0 bg-background border-b border-dashed border-foreground/10 z-40 md:hidden&quot;
+          style={{ marginTop: &#039;-1px&#039; }}
+        &gt;
+          &lt;div className=&quot;flex flex-col py-3 px-4 gap-0.5&quot;&gt;
+            {NAV_LINKS.map((link) =&gt; {
+              const isActive =
+                link.to === &#039;/&#039;
+                  ? location.pathname === &#039;/&#039;
+                  : location.pathname.startsWith(link.to)
+
+              return (
+                &lt;Link
+                  key={link.to}
+                  to={link.to}
+                  className={`
+                    font-mono text-xs uppercase tracking-widest
+                    py-2.5 px-2 no-underline transition-colors
+                    ${isActive
+                      ? &#039;text-accent-rust bg-accent-rust/[0.06]&#039;
+                      : &#039;text-muted-foreground hover:text-foreground&#039;
+                    }
+                  `}
+                  onClick={() =&gt; setMobileOpen(false)}
+                &gt;
+                  {isActive ? `[ ${link.label} ]` : link.label}
+                &lt;/Link&gt;
+              )
+            })}
+          &lt;/div&gt;
+        &lt;/nav&gt;
+      )}
+    &lt;/header&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/Card.tsx</h2>
+    <pre><code>import type { ReactNode } from &#039;react&#039;
+
+interface CardProps {
+  children: ReactNode
+  className?: string
+  hover?: boolean
+}
+
+export function Card({ children, className = &#039;&#039;, hover = true }: CardProps) {
+  return (
+    &lt;div
+      className={`
+        bg-background border border-foreground/12
+        p-5 relative
+        card-brackets
+        ${hover ? &#039;transition-all duration-200 hover:border-foreground/25 hover:shadow-[0_2px_16px_-4px_oklch(18%_0.02_40/0.08)]&#039; : &#039;&#039;}
+        ${className}
+      `}
+    &gt;
+      {children}
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/CyberButton.tsx</h2>
+    <pre><code>import type { ReactNode, MouseEventHandler } from &#039;react&#039;
+import { Link } from &#039;@tanstack/react-router&#039;
+
+type CyberVariant = &#039;rust&#039; | &#039;blue&#039; | &#039;red&#039;
+
+interface CyberButtonProps {
+  children: ReactNode
+  variant?: CyberVariant
+  href?: string
+  onClick?: MouseEventHandler&lt;HTMLButtonElement&gt;
+  className?: string
+  type?: &#039;button&#039; | &#039;submit&#039;
+  disabled?: boolean
+}
+
+const variantConfig: Record&lt;CyberVariant, {
+  borderColor: string
+  hoverBg: string
+  glowColor: string
+  ledGlow: string
+}&gt; = {
+  rust: {
+    borderColor: &#039;oklch(58% 0.16 42)&#039;,
+    hoverBg: &#039;oklch(58% 0.16 42)&#039;,
+    glowColor: &#039;oklch(58% 0.16 42 / 0.4)&#039;,
+    ledGlow: &#039;oklch(58% 0.16 42 / 0.6)&#039;,
+  },
+  blue: {
+    borderColor: &#039;oklch(52% 0.24 265)&#039;,
+    hoverBg: &#039;oklch(52% 0.24 265)&#039;,
+    glowColor: &#039;oklch(52% 0.24 265 / 0.4)&#039;,
+    ledGlow: &#039;oklch(52% 0.24 265 / 0.6)&#039;,
+  },
+  red: {
+    borderColor: &#039;oklch(62% 0.24 27)&#039;,
+    hoverBg: &#039;oklch(62% 0.24 27)&#039;,
+    glowColor: &#039;oklch(62% 0.24 27 / 0.4)&#039;,
+    ledGlow: &#039;oklch(62% 0.24 27 / 0.6)&#039;,
+  },
+}
+
+export function CyberButton({
+  children,
+  variant = &#039;rust&#039;,
+  href,
+  onClick,
+  className = &#039;&#039;,
+  type = &#039;button&#039;,
+  disabled = false,
+}: CyberButtonProps) {
+  const v = variantConfig[variant]
+
+  const baseStyle: React.CSSProperties = {
+    borderColor: v.borderColor,
+    &#039;--btn-hover-bg&#039;: v.hoverBg,
+    &#039;--btn-glow&#039;: v.glowColor,
+    &#039;--btn-led&#039;: v.ledGlow,
+  } as React.CSSProperties
+
+  const content = (
+    &lt;&gt;
+      {/* LED indicator dot */}
+      &lt;span
+        aria-hidden=&quot;true&quot;
+        className=&quot;w-1.5 h-1.5 rounded-full flex-shrink-0 transition-shadow duration-200&quot;
+        style={{
+          background: v.borderColor,
+          boxShadow: `0 0 4px ${v.ledGlow}`,
+        }}
+      /&gt;
+      {/* Label */}
+      &lt;span className=&quot;relative z-20&quot;&gt;{children}&lt;/span&gt;
+      {/* Hover fill overlay */}
+      &lt;span
+        aria-hidden=&quot;true&quot;
+        className=&quot;
+          absolute inset-0 z-10 opacity-0
+          group-hover:opacity-100
+          transition-opacity duration-200
+        &quot;
+        style={{
+          background: v.hoverBg,
+        }}
+      /&gt;
+    &lt;/&gt;
+  )
+
+  const sharedClasses = `
+    inline-flex items-center gap-2.5
+    font-display text-xs uppercase tracking-widest
+    px-5 py-2.5
+    border bg-transparent text-foreground
+    group-hover:text-background
+    transition-all duration-200
+    relative overflow-hidden
+    group no-underline
+    ${disabled ? &#039;opacity-50 pointer-events-none&#039; : &#039;cursor-pointer&#039;}
+    ${className}
+  `
+
+  if (href) {
+    return (
+      &lt;Link to={href} className={sharedClasses} style={baseStyle}&gt;
+        {content}
+      &lt;/Link&gt;
+    )
+  }
+
+  return (
+    &lt;button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={sharedClasses}
+      style={baseStyle}
+    &gt;
+      {content}
+    &lt;/button&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/Divider.tsx</h2>
+    <pre><code>interface DividerProps {
+  className?: string
+}
+
+export function Divider({ className = &#039;&#039; }: DividerProps) {
+  return (
+    &lt;div className={`flex items-center gap-4 my-12 ${className}`}&gt;
+      {/* Left dashed line */}
+      &lt;div className=&quot;flex-1 border-t border-dashed border-foreground/20&quot; /&gt;
+
+      {/* Diode symbol */}
+      &lt;svg
+        width=&quot;32&quot;
+        height=&quot;16&quot;
+        viewBox=&quot;0 0 32 16&quot;
+        className=&quot;text-accent-rust flex-shrink-0&quot;
+        aria-hidden=&quot;true&quot;
+      &gt;
+        {/* Triangle (anode) */}
+        &lt;polygon
+          points=&quot;6,2 6,14 18,8&quot;
+          fill=&quot;none&quot;
+          stroke=&quot;currentColor&quot;
+          strokeWidth=&quot;1.5&quot;
+        /&gt;
+        {/* Bar (cathode) */}
+        &lt;line
+          x1=&quot;18&quot;
+          y1=&quot;2&quot;
+          x2=&quot;18&quot;
+          y2=&quot;14&quot;
+          stroke=&quot;currentColor&quot;
+          strokeWidth=&quot;1.5&quot;
+        /&gt;
+        {/* Lead lines */}
+        &lt;line
+          x1=&quot;0&quot;
+          y1=&quot;8&quot;
+          x2=&quot;6&quot;
+          y2=&quot;8&quot;
+          stroke=&quot;currentColor&quot;
+          strokeWidth=&quot;1.5&quot;
+        /&gt;
+        &lt;line
+          x1=&quot;18&quot;
+          y1=&quot;8&quot;
+          x2=&quot;32&quot;
+          y2=&quot;8&quot;
+          stroke=&quot;currentColor&quot;
+          strokeWidth=&quot;1.5&quot;
+        /&gt;
+      &lt;/svg&gt;
+
+      {/* Right dashed line */}
+      &lt;div className=&quot;flex-1 border-t border-dashed border-foreground/20&quot; /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/DotMatrixText.tsx</h2>
+    <pre><code>import type { ReactNode } from &#039;react&#039;
+
+type DotMatrixSize = &#039;sm&#039; | &#039;md&#039; | &#039;lg&#039; | &#039;xl&#039; | &#039;2xl&#039;
+type GlowColor = &#039;rust&#039; | &#039;red&#039; | &#039;blue&#039; | &#039;cyan&#039;
+
+interface DotMatrixTextProps {
+  children: ReactNode
+  size?: DotMatrixSize
+  glow?: GlowColor
+  as?: &#039;h1&#039; | &#039;h2&#039; | &#039;h3&#039; | &#039;h4&#039; | &#039;p&#039; | &#039;span&#039; | &#039;div&#039;
+  className?: string
+}
+
+const sizeMap: Record&lt;DotMatrixSize, string&gt; = {
+  sm: &#039;text-xs leading-relaxed&#039;,
+  md: &#039;text-base md:text-lg&#039;,
+  lg: &#039;text-xl md:text-2xl&#039;,
+  xl: &#039;text-2xl md:text-4xl&#039;,
+  &#039;2xl&#039;: &#039;text-4xl md:text-6xl lg:text-7xl&#039;,
+}
+
+const glowStyles: Record&lt;GlowColor, { filter: string; color: string }&gt; = {
+  rust: {
+    filter: &#039;drop-shadow(0 0 12px oklch(58% 0.16 42 / 0.5)) drop-shadow(0 0 4px oklch(58% 0.16 42 / 0.3))&#039;,
+    color: &#039;oklch(58% 0.16 42)&#039;,
+  },
+  red: {
+    filter: &#039;drop-shadow(0 0 12px oklch(62% 0.24 27 / 0.5)) drop-shadow(0 0 4px oklch(62% 0.24 27 / 0.3))&#039;,
+    color: &#039;oklch(62% 0.24 27)&#039;,
+  },
+  blue: {
+    filter: &#039;drop-shadow(0 0 12px oklch(52% 0.24 265 / 0.5)) drop-shadow(0 0 4px oklch(52% 0.24 265 / 0.3))&#039;,
+    color: &#039;oklch(52% 0.24 265)&#039;,
+  },
+  cyan: {
+    filter: &#039;drop-shadow(0 0 12px oklch(78% 0.15 195 / 0.5)) drop-shadow(0 0 4px oklch(78% 0.15 195 / 0.3))&#039;,
+    color: &#039;oklch(78% 0.15 195)&#039;,
+  },
+}
+
+export function DotMatrixText({
+  children,
+  size = &#039;md&#039;,
+  glow,
+  as: Tag = &#039;span&#039;,
+  className = &#039;&#039;,
+}: DotMatrixTextProps) {
+  const glowStyle = glow ? glowStyles[glow] : null
+
+  return (
+    &lt;Tag
+      className={`
+        font-display uppercase tracking-wider
+        ${sizeMap[size]}
+        relative inline-block
+        ${className}
+      `}
+      style={{
+        ...(glowStyle ? { filter: glowStyle.filter } : {}),
+      }}
+    &gt;
+      {/* Dot-matrix overlay — tighter grid for more visible pixelation */}
+      &lt;span
+        aria-hidden=&quot;true&quot;
+        className=&quot;pointer-events-none absolute inset-0 z-10&quot;
+        style={{
+          backgroundImage:
+            &#039;radial-gradient(circle, transparent 35%, oklch(96.5% 0.012 80 / 0.5) 36%)&#039;,
+          backgroundSize: &#039;4px 4px&#039;,
+          mixBlendMode: &#039;multiply&#039;,
+        }}
+      /&gt;
+      {/* Actual text */}
+      &lt;span className=&quot;relative z-0&quot;&gt;{children}&lt;/span&gt;
+    &lt;/Tag&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/SectionLabel.tsx</h2>
+    <pre><code>interface SectionLabelProps {
+  number: string
+  label: string
+  className?: string
+}
+
+export function SectionLabel({ number, label, className = &#039;&#039; }: SectionLabelProps) {
+  return (
+    &lt;div
+      className={`
+        font-mono text-accent-rust uppercase tracking-widest text-xs
+        flex items-center gap-2 mb-8
+        ${className}
+      `}
+    &gt;
+      &lt;span className=&quot;text-muted-foreground&quot;&gt;[&lt;/span&gt;
+      &lt;span&gt;{number}&lt;/span&gt;
+      &lt;span className=&quot;text-muted-foreground&quot;&gt;//&lt;/span&gt;
+      &lt;span&gt;{label}&lt;/span&gt;
+      &lt;span className=&quot;text-muted-foreground&quot;&gt;]&lt;/span&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/components/primitives/TerminalCursor.tsx</h2>
+    <pre><code>interface TerminalCursorProps {
+  className?: string
+}
+
+export function TerminalCursor({ className = &#039;&#039; }: TerminalCursorProps) {
+  return (
+    &lt;span
+      className={`inline-block font-terminal text-accent-rust ${className}`}
+      style={{ animation: &#039;blink 1s step-end infinite&#039; }}
+      aria-hidden=&quot;true&quot;
+    &gt;
+      █
+    &lt;/span&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/data/projects.ts</h2>
+    <pre><code>export interface Project {
+  id: string
+  title: string
+  date: string
+  summary: string
+  tags: string[]
+  github?: string
+  demo?: string
+  image?: string
+}
+
+export const PROJECTS: Project[] = [
+  {
+    id: &#039;cyber-deck&#039;,
+    title: &#039;Cyberdeck mk III&#039;,
+    date: &#039;2025-11&#039;,
+    summary: &#039;A custom mechanical keyboard and integrated display housed in a 3D-printed chassis. Powered by a Raspberry Pi 5 with a custom embedded Linux distro.&#039;,
+    tags: [&#039;Hardware&#039;, &#039;C++&#039;, &#039;Linux&#039;, &#039;3D Printing&#039;],
+    github: &#039;https://github.com/example/cyberdeck&#039;,
+  },
+  {
+    id: &#039;neural-synth&#039;,
+    title: &#039;Neural Synth Engine&#039;,
+    date: &#039;2025-06&#039;,
+    summary: &#039;A polyphonic hardware synthesizer using a neural network for real-time waveform generation. Implemented on an FPGA.&#039;,
+    tags: [&#039;Verilog&#039;, &#039;DSP&#039;, &#039;FPGA&#039;, &#039;Python&#039;],
+    github: &#039;https://github.com/example/neural-synth&#039;,
+    demo: &#039;https://youtube.com/example&#039;,
+  },
+  {
+    id: &#039;mesh-net&#039;,
+    title: &#039;LoRa Mesh Comm&#039;,
+    date: &#039;2024-12&#039;,
+    summary: &#039;Off-grid encrypted messaging system using LoRa radios and ESP32 microcontrollers. 10km range with multi-hop routing.&#039;,
+    tags: [&#039;ESP32&#039;, &#039;C&#039;, &#039;Crypto&#039;, &#039;RF&#039;],
+    github: &#039;https://github.com/example/mesh-net&#039;,
+  }
+]
+</code></pre>
+    <h2>File: src/data/skills.ts</h2>
+    <pre><code>export interface SkillCategory {
+  title: string
+  skills: string[]
+}
+
+export const SKILLS: SkillCategory[] = [
+  {
+    title: &#039;Hardware &amp; Embedded&#039;,
+    skills: [&#039;C / C++&#039;, &#039;Rust&#039;, &#039;Verilog&#039;, &#039;FreeRTOS&#039;, &#039;PCB Design (KiCad)&#039;, &#039;ESP32 / STM32&#039;, &#039;Oscilloscope / Logic Analyzer&#039;],
+  },
+  {
+    title: &#039;Web &amp; Systems&#039;,
+    skills: [&#039;TypeScript&#039;, &#039;React / Next.js / TanStack&#039;, &#039;Node.js / Go&#039;, &#039;PostgreSQL&#039;, &#039;Redis&#039;, &#039;Docker&#039;, &#039;Linux Admin&#039;],
+  },
+  {
+    title: &#039;Fabrication&#039;,
+    skills: [&#039;3D Modeling (Fusion 360)&#039;, &#039;FDM / Resin Printing&#039;, &#039;Laser Cutting&#039;, &#039;SMD Soldering&#039;],
+  }
+]
+</code></pre>
+    <h2>File: src/lib/auth.ts</h2>
+    <pre><code>import { createServerFn } from &#039;@tanstack/react-start&#039;
+import { useSession, clearSession } from &#039;@tanstack/react-start/server&#039;
+import crypto from &#039;node:crypto&#039;
+
+// Session configuration
+const sessionConfig = {
+  // Use a fallback for dev, but require a real secret in prod
+  password: process.env.SESSION_SECRET || &#039;fallback-secret-must-be-32-chars-long!&#039;,
+  name: &#039;cyber-admin-session&#039;,
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+}
+
+export type AuthSession = {
+  isAdmin: boolean
+}
+
+// 1. Get current session state
+export const getAuthSession = createServerFn({ method: &#039;GET&#039; })
+  .handler(async () =&gt; {
+    const session = await useSession&lt;AuthSession&gt;(sessionConfig)
+    return session.data
+  })
+
+// 2. Login function (checks password)
+export const loginAdmin = createServerFn({ method: &#039;POST&#039; })
+  .validator((password: string) =&gt; password)
+  .handler(async ({ data: password }) =&gt; {
+    const correctPassword = process.env.SITE_ADMIN_PASSWORD
+
+    if (!correctPassword) {
+      throw new Error(&#039;SITE_ADMIN_PASSWORD is not configured on the server.&#039;)
+    }
+
+    // Use timing-safe equal to prevent timing attacks
+    const a = Buffer.from(password)
+    const b = Buffer.from(correctPassword)
+    
+    // Quick length check (leaks length, but that&#039;s standard)
+    if (a.length !== b.length) {
+      return { success: false, error: &#039;Invalid password&#039; }
+    }
+
+    const isValid = crypto.timingSafeEqual(a, b)
+
+    if (!isValid) {
+      return { success: false, error: &#039;Invalid password&#039; }
+    }
+
+    // Update session
+    const session = await useSession&lt;AuthSession&gt;(sessionConfig)
+    await session.update({ isAdmin: true })
+
+    return { success: true }
+  })
+
+// 3. Logout function
+export const logoutAdmin = createServerFn({ method: &#039;POST&#039; })
+  .handler(async () =&gt; {
+    await clearSession(sessionConfig)
+    return { success: true }
+  })
+</code></pre>
+    <h2>File: src/lib/markdown.tsx</h2>
+    <pre><code>import ReactMarkdown from &#039;react-markdown&#039;
+import remarkGfm from &#039;remark-gfm&#039;
+import rehypeRaw from &#039;rehype-raw&#039;
+import rehypeSanitize from &#039;rehype-sanitize&#039;
+
+interface MarkdownRendererProps {
+  content: string
+}
+
+export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+  return (
+    &lt;div className=&quot;prose-cyber&quot;&gt;
+      &lt;ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw, rehypeSanitize]}
+        components={{
+          // Override specific elements if needed
+          img: ({ node, ...props }) =&gt; (
+            &lt;img {...props} className=&quot;rounded-sm border border-foreground/20 max-w-full my-4&quot; /&gt;
+          ),
+          code: ({ node, inline, className, children, ...props }: any) =&gt; {
+            if (inline) {
+              return &lt;code className=&quot;bg-muted px-1.5 py-0.5 rounded-sm&quot; {...props}&gt;{children}&lt;/code&gt;
+            }
+            return (
+              &lt;pre className=&quot;bg-foreground text-oled-green p-4 overflow-x-auto rounded-sm border border-muted&quot; {...props}&gt;
+                &lt;code&gt;{children}&lt;/code&gt;
+              &lt;/pre&gt;
+            )
+          }
+        }}
+      &gt;
+        {content}
+      &lt;/ReactMarkdown&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/lib/supabase.ts</h2>
+    <pre><code>import { createClient } from &#039;@supabase/supabase-js&#039;
+
+const supabaseUrl = process.env.SUPABASE_URL!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+// We use the service role key because this will only run on the server
+// (Nitro environment). No client-side database access for security.
+export const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+  },
+})
+</code></pre>
+    <h2>File: src/router.tsx</h2>
+    <pre><code>import { createRouter as createTanStackRouter } from &#039;@tanstack/react-router&#039;
+import { routeTree } from &#039;./routeTree.gen&#039;
+
+export function getRouter() {
+  const router = createTanStackRouter({
+    routeTree,
+    scrollRestoration: true,
+    defaultPreload: &#039;intent&#039;,
+    defaultPreloadStaleTime: 0,
+  })
+
+  return router
+}
+
+declare module &#039;@tanstack/react-router&#039; {
+  interface Register {
+    router: ReturnType&lt;typeof getRouter&gt;
+  }
+}
+</code></pre>
+    <h2>File: src/routes/about.tsx</h2>
+    <pre><code>import { createFileRoute } from &#039;@tanstack/react-router&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { Divider } from &#039;../components/primitives/Divider&#039;
+
+export const Route = createFileRoute(&#039;/about&#039;)({
+  component: About,
+})
+
+function About() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 pb-20&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;rust&quot; className=&quot;mb-12&quot;&gt;
+        ABOUT
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;00&quot; label=&quot;SYS_INFO&quot; /&gt;
+      
+      &lt;div className=&quot;prose-cyber max-w-2xl&quot;&gt;
+        &lt;p&gt;
+          I am a multidisciplinary engineer bridging the gap between hardware and software. 
+          My background in Electrical Engineering has given me a deep appreciation for the physical 
+          reality of computing—electrons flowing through silicon, signals propagating across traces, 
+          and the physical constraints that software often takes for granted.
+        &lt;/p&gt;
+        
+        &lt;p&gt;
+          Currently, I&#039;m exploring the intersection of modern web technologies and embedded systems.
+          I believe the next wave of innovation lies in tightly coupled hardware-software ecosystems
+          where the boundaries between physical devices and digital services disappear.
+        &lt;/p&gt;
+        
+        &lt;Divider /&gt;
+        
+        &lt;h3 className=&quot;font-display text-lg text-foreground mb-4&quot;&gt;BACKGROUND&lt;/h3&gt;
+        &lt;ul&gt;
+          &lt;li&gt;B.S. Electrical Engineering&lt;/li&gt;
+          &lt;li&gt;Embedded Systems Developer&lt;/li&gt;
+          &lt;li&gt;Full-Stack Web Architect&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/admin/index.tsx</h2>
+    <pre><code>import { createFileRoute, Link } from &#039;@tanstack/react-router&#039;
+import { Card } from &#039;../../components/primitives/Card&#039;
+import { SectionLabel } from &#039;../../components/primitives/SectionLabel&#039;
+
+export const Route = createFileRoute(&#039;/admin/&#039;)({
+  component: AdminIndex,
+})
+
+function AdminIndex() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500&quot;&gt;
+      &lt;SectionLabel number=&quot;00&quot; label=&quot;DASHBOARD&quot; /&gt;
+      
+      &lt;div className=&quot;grid grid-cols-1 md:grid-cols-2 gap-6 mt-8&quot;&gt;
+        &lt;Link to=&quot;/admin/write&quot; className=&quot;no-underline group&quot;&gt;
+          &lt;Card className=&quot;h-full flex flex-col items-center justify-center p-8 text-center group-hover:border-accent-blue transition-colors&quot;&gt;
+            &lt;h3 className=&quot;font-display text-2xl text-foreground mb-2 group-hover:text-accent-blue transition-colors&quot;&gt;
+              NEW TRANSMISSION
+            &lt;/h3&gt;
+            &lt;p className=&quot;font-mono text-sm text-muted-foreground uppercase tracking-widest&quot;&gt;
+              Draft a new blog post
+            &lt;/p&gt;
+          &lt;/Card&gt;
+        &lt;/Link&gt;
+
+        &lt;Card className=&quot;h-full flex flex-col items-center justify-center p-8 text-center opacity-50&quot;&gt;
+          &lt;h3 className=&quot;font-display text-2xl text-foreground mb-2&quot;&gt;
+            MANAGE MEDIA
+          &lt;/h3&gt;
+          &lt;p className=&quot;font-mono text-sm text-muted-foreground uppercase tracking-widest&quot;&gt;
+            (Coming Soon)
+          &lt;/p&gt;
+        &lt;/Card&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/admin/write.tsx</h2>
+    <pre><code>import { createFileRoute } from &#039;@tanstack/react-router&#039;
+import { SectionLabel } from &#039;../../components/primitives/SectionLabel&#039;
+
+export const Route = createFileRoute(&#039;/admin/write&#039;)({
+  component: WritePost,
+})
+
+function WritePost() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500&quot;&gt;
+      &lt;SectionLabel number=&quot;01&quot; label=&quot;NEW POST&quot; /&gt;
+      
+      &lt;div className=&quot;p-8 border border-foreground/20 bg-foreground/5 mt-8 text-center&quot;&gt;
+        &lt;p className=&quot;font-mono text-muted-foreground uppercase tracking-wider&quot;&gt;
+          WYSIWYG Markdown Editor Placeholder
+        &lt;/p&gt;
+        &lt;p className=&quot;font-mono text-xs text-foreground/40 mt-2&quot;&gt;
+          (To be implemented in a future phase with Supabase storage)
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/admin.tsx</h2>
+    <pre><code>import { createFileRoute, Outlet, redirect, useRouter } from &#039;@tanstack/react-router&#039;
+import { getAuthSession, logoutAdmin } from &#039;../lib/auth&#039;
+import { useServerFn } from &#039;@tanstack/react-start&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+
+export const Route = createFileRoute(&#039;/admin&#039;)({
+  beforeLoad: async () =&gt; {
+    // Check auth session before rendering any admin route
+    const session = await getAuthSession()
+    
+    if (!session?.isAdmin) {
+      // Redirect to unlock screen if not logged in
+      throw redirect({
+        to: &#039;/unlock&#039;,
+      })
+    }
+    
+    return { session }
+  },
+  component: AdminLayout,
+})
+
+function AdminLayout() {
+  const logoutFn = useServerFn(logoutAdmin)
+  const router = useRouter()
+
+  const handleLogout = async () =&gt; {
+    await logoutFn()
+    router.invalidate() // Force router to re-run beforeLoad, which will redirect to /unlock
+  }
+
+  return (
+    &lt;div className=&quot;flex flex-col min-h-screen pb-20&quot;&gt;
+      &lt;header className=&quot;flex items-center justify-between py-4 border-b border-foreground/10 mb-8&quot;&gt;
+        &lt;DotMatrixText size=&quot;md&quot; glow=&quot;cyan&quot;&gt;
+          SYS_ADMIN
+        &lt;/DotMatrixText&gt;
+        
+        &lt;button
+          type=&quot;button&quot;
+          onClick={handleLogout}
+          className=&quot;font-mono text-xs uppercase tracking-wider text-muted-foreground hover:text-accent-rust transition-colors cursor-pointer&quot;
+        &gt;
+          [ DISCONNECT ]
+        &lt;/button&gt;
+      &lt;/header&gt;
+
+      &lt;Outlet /&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/blog/$slug.tsx</h2>
+    <pre><code>import { createFileRoute, notFound, Link } from &#039;@tanstack/react-router&#039;
+import { createServerFn } from &#039;@tanstack/react-start&#039;
+import { supabase } from &#039;../../lib/supabase&#039;
+import { MarkdownRenderer } from &#039;../../lib/markdown&#039;
+import { DotMatrixText } from &#039;../../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../../components/primitives/SectionLabel&#039;
+import { Divider } from &#039;../../components/primitives/Divider&#039;
+
+const getPost = createServerFn({ method: &#039;GET&#039; })
+  .validator((slug: string) =&gt; slug)
+  .handler(async ({ data: slug }) =&gt; {
+    try {
+      if (!process.env.SUPABASE_URL) {
+        // Mock fallback
+        if (slug === &#039;hello-world&#039;) {
+          return {
+            title: &#039;Hello World: Boot sequence initiated&#039;,
+            created_at: &#039;2026-07-04T12:00:00Z&#039;,
+            content: &#039;# Booting...\n\nThis is a test transmission from the new system.\n\n## Systems check\n- Power: OK\n- Logic: OK\n- Memory: OK\n\n```c\nint main() {\n  printf(&quot;Hello hardware.&quot;);\n  return 0;\n}\n```\n\nEnd of transmission.&#039;,
+          }
+        }
+        return null
+      }
+      
+      const { data, error } = await supabase
+        .from(&#039;posts&#039;)
+        .select(&#039;*&#039;)
+        .eq(&#039;slug&#039;, slug)
+        .eq(&#039;published&#039;, true)
+        .single()
+        
+      if (error || !data) return null
+      return data
+    } catch (err) {
+      console.error(err)
+      return null
+    }
+  })
+
+export const Route = createFileRoute(&#039;/blog/$slug&#039;)({
+  loader: async ({ params }) =&gt; {
+    const post = await getPost(params.slug)
+    if (!post) throw notFound()
+    return { post }
+  },
+  head: ({ loaderData }) =&gt; ({
+    meta: [
+      { title: `${loaderData?.post?.title} | Transmissions` },
+    ]
+  }),
+  component: BlogPost,
+})
+
+function BlogPost() {
+  const { post } = Route.useLoaderData()
+
+  return (
+    &lt;article className=&quot;animate-in fade-in duration-500 pb-20 max-w-[65ch]&quot;&gt;
+      &lt;Link to=&quot;/blog&quot; className=&quot;font-mono text-xs text-muted-foreground hover:text-accent-blue uppercase tracking-widest no-underline mb-8 inline-block&quot;&gt;
+        &amp;larr; BACK TO TRANSMISSIONS
+      &lt;/Link&gt;
+      
+      &lt;header className=&quot;mb-12&quot;&gt;
+        &lt;SectionLabel 
+          number=&quot;LOG&quot; 
+          label={new Date(post.created_at).toLocaleDateString(&#039;en-US&#039;, {
+            year: &#039;numeric&#039;, month: &#039;short&#039;, day: &#039;2-digit&#039;
+          })} 
+          className=&quot;mb-6&quot;
+        /&gt;
+        &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;blue&quot;&gt;
+          {post.title}
+        &lt;/DotMatrixText&gt;
+      &lt;/header&gt;
+      
+      &lt;Divider /&gt;
+      
+      &lt;div className=&quot;mt-12&quot;&gt;
+        &lt;MarkdownRenderer content={post.content} /&gt;
+      &lt;/div&gt;
+    &lt;/article&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/blog/index.tsx</h2>
+    <pre><code>import { createFileRoute, Link } from &#039;@tanstack/react-router&#039;
+import { createServerFn } from &#039;@tanstack/react-start&#039;
+import { supabase } from &#039;../../lib/supabase&#039;
+import { DotMatrixText } from &#039;../../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../../components/primitives/SectionLabel&#039;
+import { Card } from &#039;../../components/primitives/Card&#039;
+
+// Mock data fallback if DB not configured yet
+const MOCK_POSTS = [
+  {
+    slug: &#039;hello-world&#039;,
+    title: &#039;Hello World: Boot sequence initiated&#039;,
+    created_at: &#039;2026-07-04T12:00:00Z&#039;,
+    summary: &#039;Testing the new portfolio and transmission system.&#039;,
+  },
+  {
+    slug: &#039;building-the-cyberdeck&#039;,
+    title: &#039;Building a Cyberdeck from Scratch&#039;,
+    created_at: &#039;2026-06-15T09:30:00Z&#039;,
+    summary: &#039;A deep dive into the mechanical and electrical design of my latest custom hardware project.&#039;,
+  }
+]
+
+const getPosts = createServerFn({ method: &#039;GET&#039; }).handler(async () =&gt; {
+  try {
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      return MOCK_POSTS
+    }
+    const { data, error } = await supabase
+      .from(&#039;posts&#039;)
+      .select(&#039;slug, title, created_at, summary&#039;)
+      .eq(&#039;published&#039;, true)
+      .order(&#039;created_at&#039;, { ascending: false })
+      
+    if (error) throw error
+    return data || []
+  } catch (err) {
+    console.error(&#039;Error fetching posts:&#039;, err)
+    return MOCK_POSTS // fallback for now
+  }
+})
+
+export const Route = createFileRoute(&#039;/blog/&#039;)({
+  loader: () =&gt; getPosts(),
+  component: BlogIndex,
+})
+
+function BlogIndex() {
+  const posts = Route.useLoaderData()
+
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 pb-20&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;blue&quot; className=&quot;mb-12&quot;&gt;
+        TRANSMISSIONS
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;04&quot; label=&quot;ENGINEERING LOGS&quot; /&gt;
+      
+      &lt;div className=&quot;flex flex-col gap-6 mt-8&quot;&gt;
+        {posts.map((post) =&gt; (
+          &lt;Link key={post.slug} to={`/blog/${post.slug}`} className=&quot;no-underline group block&quot;&gt;
+            &lt;Card className=&quot;group-hover:border-accent-blue transition-colors relative overflow-hidden&quot;&gt;
+              &lt;div className=&quot;absolute left-0 top-0 bottom-0 w-1 bg-accent-blue opacity-0 group-hover:opacity-100 transition-opacity&quot; /&gt;
+              
+              &lt;div className=&quot;pl-4&quot;&gt;
+                &lt;span className=&quot;font-mono text-xs text-muted-foreground uppercase tracking-widest block mb-2&quot;&gt;
+                  {new Date(post.created_at).toLocaleDateString(&#039;en-US&#039;, {
+                    year: &#039;numeric&#039;, month: &#039;short&#039;, day: &#039;2-digit&#039;
+                  })}
+                &lt;/span&gt;
+                
+                &lt;h2 className=&quot;font-display text-xl text-foreground mb-3 group-hover:text-accent-blue transition-colors&quot;&gt;
+                  {post.title}
+                &lt;/h2&gt;
+                
+                &lt;p className=&quot;prose-cyber mb-0 text-muted-foreground&quot;&gt;
+                  {post.summary}
+                &lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/Card&gt;
+          &lt;/Link&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/contact.tsx</h2>
+    <pre><code>import { createFileRoute } from &#039;@tanstack/react-router&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { CyberButton } from &#039;../components/primitives/CyberButton&#039;
+import { Card } from &#039;../components/primitives/Card&#039;
+
+export const Route = createFileRoute(&#039;/contact&#039;)({
+  component: Contact,
+})
+
+function Contact() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 pb-20&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;red&quot; className=&quot;mb-12&quot;&gt;
+        CONTACT
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;09&quot; label=&quot;TRANSMISSION&quot; /&gt;
+      
+      &lt;div className=&quot;max-w-xl&quot;&gt;
+        &lt;Card&gt;
+          &lt;h2 className=&quot;font-display text-xl text-foreground mb-4&quot;&gt;ESTABLISH CONNECTION&lt;/h2&gt;
+          &lt;p className=&quot;prose-cyber mb-8&quot;&gt;
+            Looking for a collaborator on a hardware/software project? Want to discuss embedded systems, web architecture, or mechanical keyboards? Send a transmission.
+          &lt;/p&gt;
+          
+          &lt;div className=&quot;flex flex-col gap-4&quot;&gt;
+            &lt;CyberButton href=&quot;mailto:hello@example.com&quot; variant=&quot;rust&quot; className=&quot;w-fit&quot;&gt;
+              EMAIL // HELLO@EXAMPLE.COM
+            &lt;/CyberButton&gt;
+            
+            &lt;CyberButton href=&quot;https://github.com&quot; variant=&quot;blue&quot; className=&quot;w-fit&quot;&gt;
+              GITHUB // OPEN_SOURCE
+            &lt;/CyberButton&gt;
+            
+            &lt;CyberButton href=&quot;https://linkedin.com&quot; variant=&quot;blue&quot; className=&quot;w-fit&quot;&gt;
+              LINKEDIN // NETWORK
+            &lt;/CyberButton&gt;
+          &lt;/div&gt;
+        &lt;/Card&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/index.tsx</h2>
+    <pre><code>import { createFileRoute, Link } from &#039;@tanstack/react-router&#039;
+import { createServerFn } from &#039;@tanstack/react-start&#039;
+import { useState, useEffect } from &#039;react&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { TerminalCursor } from &#039;../components/primitives/TerminalCursor&#039;
+import { CyberButton } from &#039;../components/primitives/CyberButton&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { Divider } from &#039;../components/primitives/Divider&#039;
+import { Card } from &#039;../components/primitives/Card&#039;
+
+export const Route = createFileRoute(&#039;/&#039;)(  {
+  component: Index,
+})
+
+const TERMINAL_LINES = [
+  { prefix: &#039;&gt;&#039;, text: &#039; INITIALIZING SYSTEM...&#039; },
+  { prefix: &#039;&gt;&#039;, text: &#039; LOADING MODULES...&#039; },
+  { prefix: &#039;&gt;&#039;, text: &#039; ESTABLISHING CONNECTION...&#039; },
+  { prefix: &#039;&gt;&#039;, text: &#039; ALL SYSTEMS NOMINAL.&#039; },
+  { prefix: &#039;$&#039;, text: &#039; echo &quot;HELLO, WORLD.&quot;&#039; },
+]
+
+function Index() {
+  const [lineIndex, setLineIndex] = useState(0)
+  const [charIndex, setCharIndex] = useState(0)
+  const [lines, setLines] = useState&lt;string[]&gt;([])
+  const [done, setDone] = useState(false)
+
+  useEffect(() =&gt; {
+    if (lineIndex &gt;= TERMINAL_LINES.length) {
+      setDone(true)
+      return
+    }
+
+    const currentLine = TERMINAL_LINES[lineIndex]
+    const fullLine = currentLine.prefix + currentLine.text
+
+    if (charIndex &lt; fullLine.length) {
+      const timeout = setTimeout(() =&gt; {
+        setCharIndex((c) =&gt; c + 1)
+      }, 25 + Math.random() * 20)
+      return () =&gt; clearTimeout(timeout)
+    }
+
+    // Line complete — pause then move to next
+    const pauseTimeout = setTimeout(() =&gt; {
+      setLines((prev) =&gt; [...prev, fullLine])
+      setLineIndex((l) =&gt; l + 1)
+      setCharIndex(0)
+    }, 200)
+    return () =&gt; clearTimeout(pauseTimeout)
+  }, [lineIndex, charIndex])
+
+  const currentLine = lineIndex &lt; TERMINAL_LINES.length
+    ? (TERMINAL_LINES[lineIndex].prefix + TERMINAL_LINES[lineIndex].text).slice(0, charIndex)
+    : &#039;&#039;
+
+  return (
+    &lt;div&gt;
+      {/* ════════════ HERO ════════════ */}
+      &lt;section className=&quot;hero-section&quot;&gt;
+        {/* Accent tag above name */}
+        &lt;div className=&quot;flex items-center gap-3 mb-6&quot;&gt;
+          &lt;span
+            className=&quot;inline-block w-8 h-0.5 bg-accent-rust&quot;
+            style={{ boxShadow: &#039;0 0 8px oklch(58% 0.16 42 / 0.4)&#039; }}
+          /&gt;
+          &lt;span className=&quot;font-mono text-xs text-accent-rust uppercase tracking-[0.2em]&quot;&gt;
+            Portfolio v1.0
+          &lt;/span&gt;
+        &lt;/div&gt;
+
+        {/* Main name */}
+        &lt;div className=&quot;hero-title-wrapper&quot;&gt;
+          &lt;DotMatrixText size=&quot;2xl&quot; as=&quot;h1&quot; glow=&quot;rust&quot;&gt;
+            HARSH
+          &lt;/DotMatrixText&gt;
+        &lt;/div&gt;
+
+        {/* Subtitle with LED indicators */}
+        &lt;div className=&quot;flex items-center gap-3 mb-10&quot;&gt;
+          &lt;h2 className=&quot;font-mono text-muted-foreground text-xs uppercase tracking-[0.18em] leading-relaxed&quot;&gt;
+            &lt;span className=&quot;text-accent-rust&quot;&gt;{&#039;&gt;&#039;}&lt;/span&gt; Hardware Engineer
+            &lt;span className=&quot;text-muted-foreground/40 mx-1.5&quot;&gt;|&lt;/span&gt;
+            &lt;span className=&quot;text-accent-blue&quot;&gt;{&#039;&gt;&#039;}&lt;/span&gt; Software Developer
+            &lt;span className=&quot;text-muted-foreground/40 mx-1.5&quot;&gt;|&lt;/span&gt;
+            &lt;span className=&quot;text-accent-red&quot;&gt;{&#039;&gt;&#039;}&lt;/span&gt; Maker
+          &lt;/h2&gt;
+        &lt;/div&gt;
+
+        {/* Terminal block */}
+        &lt;div className=&quot;terminal-block&quot;&gt;
+          &lt;div className=&quot;terminal-header&quot;&gt;
+            &lt;span className=&quot;terminal-dot terminal-dot--red&quot; /&gt;
+            &lt;span className=&quot;terminal-dot terminal-dot--yellow&quot; /&gt;
+            &lt;span className=&quot;terminal-dot terminal-dot--green&quot; /&gt;
+            &lt;span className=&quot;terminal-header-label&quot;&gt;bash — system_init&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;relative z-10&quot;&gt;
+            {lines.map((line, i) =&gt; (
+              &lt;div key={i} className=&quot;whitespace-pre-wrap&quot;&gt;
+                &lt;span className=&quot;text-accent-rust opacity-70&quot;&gt;{line[0]}&lt;/span&gt;
+                &lt;span&gt;{line.slice(1)}&lt;/span&gt;
+              &lt;/div&gt;
+            ))}
+            {!done &amp;&amp; (
+              &lt;div className=&quot;whitespace-pre-wrap&quot;&gt;
+                &lt;span className=&quot;text-accent-rust opacity-70&quot;&gt;{currentLine[0] || &#039;&#039;}&lt;/span&gt;
+                &lt;span&gt;{currentLine.slice(1)}&lt;/span&gt;
+                &lt;TerminalCursor className=&quot;text-oled-green&quot; /&gt;
+              &lt;/div&gt;
+            )}
+            {done &amp;&amp; (
+              &lt;div className=&quot;mt-2 text-oled-cyan&quot;&gt;
+                &lt;span className=&quot;text-accent-rust opacity-70&quot;&gt;$&lt;/span&gt; &lt;TerminalCursor className=&quot;text-oled-cyan&quot; /&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        {/* CTA Buttons */}
+        &lt;div className=&quot;flex flex-wrap gap-4&quot;&gt;
+          &lt;CyberButton href=&quot;/projects&quot; variant=&quot;rust&quot;&gt;
+            VIEW PROJECTS →
+          &lt;/CyberButton&gt;
+          &lt;CyberButton href=&quot;/blog&quot; variant=&quot;blue&quot;&gt;
+            READ TRANSMISSIONS
+          &lt;/CyberButton&gt;
+        &lt;/div&gt;
+
+        {/* Status chips */}
+        &lt;div className=&quot;status-row&quot;&gt;
+          &lt;div className=&quot;status-chip&quot;&gt;
+            &lt;span className=&quot;status-chip__dot status-chip__dot--online&quot; /&gt;
+            &lt;span&gt;Systems Online&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;status-chip&quot;&gt;
+            &lt;span className=&quot;status-chip__dot status-chip__dot--accent&quot; /&gt;
+            &lt;span&gt;Open to Collaborate&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;status-chip&quot;&gt;
+            &lt;span className=&quot;status-chip__dot&quot; style={{ background: &#039;var(--color-accent-blue)&#039;, boxShadow: &#039;0 0 6px oklch(52% 0.24 265 / 0.5)&#039; }} /&gt;
+            &lt;span&gt;Based in India&lt;/span&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;Divider /&gt;
+
+      {/* ════════════ ABOUT BRIEF ════════════ */}
+      &lt;section className=&quot;py-10&quot;&gt;
+        &lt;SectionLabel number=&quot;01&quot; label=&quot;STATUS&quot; /&gt;
+        &lt;div className=&quot;max-w-2xl space-y-5&quot;&gt;
+          &lt;p className=&quot;text-lg leading-relaxed text-foreground&quot;&gt;
+            I build things that bridge the gap between &lt;span className=&quot;text-accent-rust font-medium&quot;&gt;bits&lt;/span&gt; and &lt;span className=&quot;text-accent-blue font-medium&quot;&gt;atoms&lt;/span&gt;.
+            From embedded C firmware on bare metal to modern React web applications,
+            I enjoy working across the entire stack.
+          &lt;/p&gt;
+          &lt;p className=&quot;text-muted-foreground leading-relaxed&quot;&gt;
+            Welcome to my personal databank — part portfolio, part engineering log.
+            Explore my projects, read technical deep-dives, or get in touch for a collaboration.
+          &lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;Divider /&gt;
+
+      {/* ════════════ FEATURED PROJECTS ════════════ */}
+      &lt;section className=&quot;py-10&quot;&gt;
+        &lt;SectionLabel number=&quot;02&quot; label=&quot;FEATURED BUILDS&quot; /&gt;
+        &lt;div className=&quot;grid grid-cols-1 md:grid-cols-2 gap-5 mt-2 stagger-fade-in&quot;&gt;
+          &lt;Card className=&quot;group&quot;&gt;
+            &lt;div className=&quot;flex items-start justify-between mb-3&quot;&gt;
+              &lt;h3 className=&quot;font-display text-sm text-foreground group-hover:text-accent-rust transition-colors&quot;&gt;
+                CYBERDECK MK III
+              &lt;/h3&gt;
+              &lt;span className=&quot;font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5&quot;&gt;
+                2025
+              &lt;/span&gt;
+            &lt;/div&gt;
+            &lt;p className=&quot;text-sm text-muted-foreground leading-relaxed mb-4&quot;&gt;
+              Custom mechanical keyboard &amp; display in a 3D-printed chassis. Raspberry Pi 5, custom embedded Linux.
+            &lt;/p&gt;
+            &lt;div className=&quot;flex flex-wrap gap-1.5&quot;&gt;
+              {[&#039;Hardware&#039;, &#039;C++&#039;, &#039;Linux&#039;].map((t) =&gt; (
+                &lt;span key={t} className=&quot;font-mono text-xs text-accent-rust/70 border border-accent-rust/20 px-1.5 py-0.5&quot;&gt;
+                  {t}
+                &lt;/span&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/Card&gt;
+
+          &lt;Card className=&quot;group&quot;&gt;
+            &lt;div className=&quot;flex items-start justify-between mb-3&quot;&gt;
+              &lt;h3 className=&quot;font-display text-sm text-foreground group-hover:text-accent-blue transition-colors&quot;&gt;
+                NEURAL SYNTH ENGINE
+              &lt;/h3&gt;
+              &lt;span className=&quot;font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5&quot;&gt;
+                2025
+              &lt;/span&gt;
+            &lt;/div&gt;
+            &lt;p className=&quot;text-sm text-muted-foreground leading-relaxed mb-4&quot;&gt;
+              Polyphonic hardware synthesizer using neural network waveform generation on FPGA.
+            &lt;/p&gt;
+            &lt;div className=&quot;flex flex-wrap gap-1.5&quot;&gt;
+              {[&#039;Verilog&#039;, &#039;DSP&#039;, &#039;FPGA&#039;].map((t) =&gt; (
+                &lt;span key={t} className=&quot;font-mono text-xs text-accent-blue/70 border border-accent-blue/20 px-1.5 py-0.5&quot;&gt;
+                  {t}
+                &lt;/span&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/Card&gt;
+        &lt;/div&gt;
+
+        &lt;div className=&quot;mt-6&quot;&gt;
+          &lt;CyberButton href=&quot;/projects&quot; variant=&quot;rust&quot; className=&quot;!text-[10px]&quot;&gt;
+            ALL PROJECTS →
+          &lt;/CyberButton&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;Divider /&gt;
+
+      {/* ════════════ QUICK LINKS / CAPABILITIES ════════════ */}
+      &lt;section className=&quot;py-10&quot;&gt;
+        &lt;SectionLabel number=&quot;03&quot; label=&quot;CAPABILITIES&quot; /&gt;
+        &lt;div className=&quot;grid grid-cols-2 md:grid-cols-3 gap-3 mt-2 stagger-fade-in&quot;&gt;
+          {[
+            { label: &#039;Embedded C/C++&#039;, icon: &#039;[C]&#039; },
+            { label: &#039;PCB Design&#039;, icon: &#039;[P]&#039; },
+            { label: &#039;FPGA / Verilog&#039;, icon: &#039;[F]&#039; },
+            { label: &#039;React / TS&#039;, icon: &#039;[R]&#039; },
+            { label: &#039;Systems Design&#039;, icon: &#039;[S]&#039; },
+            { label: &#039;3D Fabrication&#039;, icon: &#039;[3D]&#039; },
+          ].map((s) =&gt; (
+            &lt;div
+              key={s.label}
+              className=&quot;
+                flex items-center gap-3 px-4 py-3
+                border border-foreground/10 bg-foreground/[0.02]
+                hover:border-accent-rust/40 hover:bg-foreground/[0.04]
+                transition-all duration-200 cursor-default group
+              &quot;
+            &gt;
+              &lt;span className=&quot;text-accent-rust/60 text-base group-hover:text-accent-rust transition-colors&quot;&gt;{s.icon}&lt;/span&gt;
+              &lt;span className=&quot;font-mono text-xs uppercase tracking-wider text-foreground/80&quot;&gt;{s.label}&lt;/span&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+
+        &lt;div className=&quot;mt-6 flex gap-3&quot;&gt;
+          &lt;CyberButton href=&quot;/skills&quot; variant=&quot;blue&quot; className=&quot;!text-[10px]&quot;&gt;
+            FULL SKILL MATRIX →
+          &lt;/CyberButton&gt;
+          &lt;CyberButton href=&quot;/contact&quot; variant=&quot;rust&quot; className=&quot;!text-[10px]&quot;&gt;
+            GET IN TOUCH
+          &lt;/CyberButton&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/projects.tsx</h2>
+    <pre><code>import { createFileRoute } from &#039;@tanstack/react-router&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { Card } from &#039;../components/primitives/Card&#039;
+import { CyberButton } from &#039;../components/primitives/CyberButton&#039;
+import { PROJECTS } from &#039;../data/projects&#039;
+
+export const Route = createFileRoute(&#039;/projects&#039;)({
+  component: Projects,
+})
+
+function Projects() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 pb-20&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;blue&quot; className=&quot;mb-12&quot;&gt;
+        PROJECTS
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;03&quot; label=&quot;HARDWARE &amp; SOFTWARE&quot; /&gt;
+
+      &lt;div className=&quot;grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8&quot;&gt;
+        {PROJECTS.map((p) =&gt; (
+          &lt;Card key={p.id} className=&quot;flex flex-col h-full&quot;&gt;
+            &lt;div className=&quot;mb-4 flex justify-between items-start&quot;&gt;
+              &lt;h3 className=&quot;font-display text-xl text-foreground&quot;&gt;{p.title}&lt;/h3&gt;
+              &lt;span className=&quot;font-mono text-xs text-muted-foreground bg-muted px-2 py-1&quot;&gt;
+                {p.date}
+              &lt;/span&gt;
+            &lt;/div&gt;
+            
+            &lt;p className=&quot;prose-cyber flex-grow mb-6&quot;&gt;
+              {p.summary}
+            &lt;/p&gt;
+            
+            &lt;div className=&quot;flex flex-wrap gap-2 mb-6&quot;&gt;
+              {p.tags.map((tag) =&gt; (
+                &lt;span key={tag} className=&quot;font-mono text-xs text-accent-rust border border-accent-rust/30 px-2 py-0.5&quot;&gt;
+                  {tag}
+                &lt;/span&gt;
+              ))}
+            &lt;/div&gt;
+
+            &lt;div className=&quot;flex gap-4 mt-auto&quot;&gt;
+              {p.github &amp;&amp; (
+                &lt;CyberButton href={p.github} variant=&quot;blue&quot; className=&quot;!py-1.5 !px-3&quot;&gt;
+                  SRC
+                &lt;/CyberButton&gt;
+              )}
+              {p.demo &amp;&amp; (
+                &lt;CyberButton href={p.demo} variant=&quot;rust&quot; className=&quot;!py-1.5 !px-3&quot;&gt;
+                  DEMO
+                &lt;/CyberButton&gt;
+              )}
+            &lt;/div&gt;
+          &lt;/Card&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/skills.tsx</h2>
+    <pre><code>import { createFileRoute } from &#039;@tanstack/react-router&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { SKILLS } from &#039;../data/skills&#039;
+
+export const Route = createFileRoute(&#039;/skills&#039;)({
+  component: Skills,
+})
+
+function Skills() {
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 pb-20&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;rust&quot; className=&quot;mb-12&quot;&gt;
+        SKILLS
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;02&quot; label=&quot;TECHNICAL EXPERTISE&quot; /&gt;
+
+      &lt;div className=&quot;space-y-12 mt-8&quot;&gt;
+        {SKILLS.map((category) =&gt; (
+          &lt;div key={category.title}&gt;
+            &lt;h3 className=&quot;font-display text-lg text-accent-blue mb-4&quot;&gt;
+              {category.title}
+            &lt;/h3&gt;
+            &lt;div className=&quot;flex flex-wrap gap-3&quot;&gt;
+              {category.skills.map((skill) =&gt; (
+                &lt;div
+                  key={skill}
+                  className=&quot;
+                    font-mono text-sm px-4 py-2 
+                    bg-foreground/5 border border-foreground/15
+                    hover:border-accent-rust hover:text-accent-rust
+                    transition-colors cursor-default
+                  &quot;
+                &gt;
+                  {skill}
+                &lt;/div&gt;
+              ))}
+            &lt;/div&gt;
+          &lt;/div&gt;
+        ))}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/unlock.tsx</h2>
+    <pre><code>import { createFileRoute, useNavigate } from &#039;@tanstack/react-router&#039;
+import { useState } from &#039;react&#039;
+import { useServerFn } from &#039;@tanstack/react-start&#039;
+import { loginAdmin } from &#039;../lib/auth&#039;
+import { DotMatrixText } from &#039;../components/primitives/DotMatrixText&#039;
+import { SectionLabel } from &#039;../components/primitives/SectionLabel&#039;
+import { Card } from &#039;../components/primitives/Card&#039;
+import { CyberButton } from &#039;../components/primitives/CyberButton&#039;
+
+export const Route = createFileRoute(&#039;/unlock&#039;)({
+  component: Unlock,
+})
+
+function Unlock() {
+  const [password, setPassword] = useState(&#039;&#039;)
+  const [error, setError] = useState(&#039;&#039;)
+  const [loading, setLoading] = useState(false)
+  const loginFn = useServerFn(loginAdmin)
+  const navigate = useNavigate()
+
+  const handleSubmit = async (e: React.FormEvent) =&gt; {
+    e.preventDefault()
+    setError(&#039;&#039;)
+    setLoading(true)
+
+    try {
+      const result = await loginFn(password)
+      if (result.success) {
+        // Redirect to admin
+        navigate({ to: &#039;/admin&#039; })
+      } else {
+        setError(result.error || &#039;Access denied.&#039;)
+      }
+    } catch (err: any) {
+      setError(err.message || &#039;System fault during authentication.&#039;)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    &lt;div className=&quot;animate-in fade-in duration-500 min-h-[70vh] flex flex-col justify-center max-w-md mx-auto&quot;&gt;
+      &lt;DotMatrixText size=&quot;xl&quot; as=&quot;h1&quot; glow=&quot;rust&quot; className=&quot;mb-8 text-center w-full&quot;&gt;
+        AUTH_GATE
+      &lt;/DotMatrixText&gt;
+
+      &lt;SectionLabel number=&quot;99&quot; label=&quot;RESTRICTED AREA&quot; className=&quot;justify-center&quot; /&gt;
+
+      &lt;Card hover={false} className=&quot;mt-8&quot;&gt;
+        &lt;form onSubmit={handleSubmit} className=&quot;flex flex-col gap-6&quot;&gt;
+          &lt;div className=&quot;flex flex-col gap-2&quot;&gt;
+            &lt;label htmlFor=&quot;passcode&quot; className=&quot;font-mono text-sm text-muted-foreground uppercase tracking-wider&quot;&gt;
+              Enter Passcode
+            &lt;/label&gt;
+            &lt;input
+              id=&quot;passcode&quot;
+              type=&quot;password&quot;
+              value={password}
+              onChange={(e) =&gt; setPassword(e.target.value)}
+              className=&quot;
+                bg-background border border-foreground/20 px-4 py-3
+                font-mono text-foreground focus:outline-none focus:border-accent-rust
+                transition-colors
+              &quot;
+              autoFocus
+              disabled={loading}
+            /&gt;
+          &lt;/div&gt;
+
+          {error &amp;&amp; (
+            &lt;div className=&quot;font-mono text-sm text-accent-red p-3 border border-accent-red/30 bg-accent-red/5&quot;&gt;
+              ERROR: {error}
+            &lt;/div&gt;
+          )}
+
+          &lt;CyberButton type=&quot;submit&quot; variant=&quot;rust&quot; disabled={loading} className=&quot;justify-center mt-2&quot;&gt;
+            {loading ? &#039;VERIFYING...&#039; : &#039;UNLOCK&#039;}
+          &lt;/CyberButton&gt;
+        &lt;/form&gt;
+      &lt;/Card&gt;
+    &lt;/div&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routes/__root.tsx</h2>
+    <pre><code>import { ClientOnly, HeadContent, Outlet, Scripts, createRootRoute } from &#039;@tanstack/react-router&#039;
+import { TanStackRouterDevtoolsPanel } from &#039;@tanstack/react-router-devtools&#039;
+import { TanStackDevtools } from &#039;@tanstack/react-devtools&#039;
+import { createServerFn } from &#039;@tanstack/react-start&#039;
+import { getCookie } from &#039;@tanstack/react-start/server&#039;
+import * as React from &#039;react&#039;
+
+import { Header } from &#039;../components/Header&#039;
+import { Footer } from &#039;../components/Footer&#039;
+import appCss from &#039;../styles.css?url&#039;
+
+const getTheme = createServerFn({ method: &#039;GET&#039; }).handler(async () =&gt; {
+  return getCookie(&#039;theme&#039;) || &#039;rust&#039;
+})
+
+export const Route = createRootRoute({
+  loader: async () =&gt; {
+    const theme = await getTheme()
+    return { theme }
+  },
+  head: () =&gt; ({
+    meta: [
+      { charSet: &#039;utf-8&#039; },
+      { name: &#039;viewport&#039;, content: &#039;width=device-width, initial-scale=1&#039; },
+      { title: &#039;Harsh | Hardware &amp; Software&#039; },
+      { name: &#039;description&#039;, content: &#039;Personal portfolio and engineering blog.&#039; },
+    ],
+    links: [
+      { rel: &#039;stylesheet&#039;, href: appCss },
+      { rel: &#039;preconnect&#039;, href: &#039;https://fonts.googleapis.com&#039; },
+      { rel: &#039;preconnect&#039;, href: &#039;https://fonts.gstatic.com&#039;, crossOrigin: &#039;anonymous&#039; },
+      {
+        rel: &#039;stylesheet&#039;,
+        href: &#039;https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;family=Share+Tech+Mono&amp;family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600&amp;display=swap&#039;,
+      },
+    ],
+  }),
+  component: RootComponent,
+  notFoundComponent: () =&gt; (
+    &lt;div className=&quot;flex flex-col items-center justify-center py-32 text-center&quot;&gt;
+      &lt;h1 className=&quot;font-display text-4xl text-accent-red mb-4&quot;&gt;404&lt;/h1&gt;
+      &lt;p className=&quot;font-mono text-muted-foreground uppercase tracking-wider&quot;&gt;
+        Trace not found. Path disconnected.
+      &lt;/p&gt;
+    &lt;/div&gt;
+  ),
+  errorComponent: ({ error }) =&gt; (
+    &lt;div className=&quot;p-8 border border-accent-red bg-background text-foreground m-8&quot;&gt;
+      &lt;h1 className=&quot;font-display text-2xl text-accent-red mb-4&quot;&gt;SYSTEM FAULT&lt;/h1&gt;
+      &lt;pre className=&quot;font-mono text-sm whitespace-pre-wrap&quot;&gt;
+        {error.message}
+      &lt;/pre&gt;
+    &lt;/div&gt;
+  ),
+})
+
+function RootComponent() {
+  const { theme } = Route.useLoaderData()
+
+  return (
+    &lt;html lang=&quot;en&quot; data-theme={theme} suppressHydrationWarning&gt;
+      &lt;head&gt;
+        &lt;HeadContent /&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id=&quot;app&quot; className=&quot;shell-grid&quot;&gt;
+          {/* Main Content Column */}
+          &lt;main className=&quot;shell-center shell-guideline-left shell-guideline-right flex flex-col min-h-screen&quot;&gt;
+            &lt;Header /&gt;
+            
+            &lt;div className=&quot;flex-1&quot;&gt;
+              &lt;Outlet /&gt;
+            &lt;/div&gt;
+
+            &lt;Footer /&gt;
+          &lt;/main&gt;
+        &lt;/div&gt;
+
+        &lt;TanStackDevtools
+          config={{ position: &#039;bottom-right&#039; }}
+          plugins={[
+            { name: &#039;Tanstack Router&#039;, render: &lt;TanStackRouterDevtoolsPanel /&gt; },
+          ]}
+        /&gt;
+        &lt;Scripts /&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+  )
+}
+</code></pre>
+    <h2>File: src/routeTree.gen.ts</h2>
+    <pre><code>/* eslint-disable */
+
+// @ts-nocheck
+
+// noinspection JSUnusedGlobalSymbols
+
+// This file was automatically generated by TanStack Router.
+// You should NOT make any changes in this file as it will be overwritten.
+// Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
+
+import { Route as rootRouteImport } from &#039;./routes/__root&#039;
+import { Route as UnlockRouteImport } from &#039;./routes/unlock&#039;
+import { Route as SkillsRouteImport } from &#039;./routes/skills&#039;
+import { Route as ProjectsRouteImport } from &#039;./routes/projects&#039;
+import { Route as ContactRouteImport } from &#039;./routes/contact&#039;
+import { Route as AdminRouteImport } from &#039;./routes/admin&#039;
+import { Route as AboutRouteImport } from &#039;./routes/about&#039;
+import { Route as IndexRouteImport } from &#039;./routes/index&#039;
+import { Route as BlogIndexRouteImport } from &#039;./routes/blog/index&#039;
+import { Route as AdminIndexRouteImport } from &#039;./routes/admin/index&#039;
+import { Route as BlogSlugRouteImport } from &#039;./routes/blog/$slug&#039;
+import { Route as AdminWriteRouteImport } from &#039;./routes/admin/write&#039;
+
+const UnlockRoute = UnlockRouteImport.update({
+  id: &#039;/unlock&#039;,
+  path: &#039;/unlock&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const SkillsRoute = SkillsRouteImport.update({
+  id: &#039;/skills&#039;,
+  path: &#039;/skills&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const ProjectsRoute = ProjectsRouteImport.update({
+  id: &#039;/projects&#039;,
+  path: &#039;/projects&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: &#039;/contact&#039;,
+  path: &#039;/contact&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: &#039;/admin&#039;,
+  path: &#039;/admin&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: &#039;/about&#039;,
+  path: &#039;/about&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: &#039;/&#039;,
+  path: &#039;/&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const BlogIndexRoute = BlogIndexRouteImport.update({
+  id: &#039;/blog/&#039;,
+  path: &#039;/blog/&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: &#039;/&#039;,
+  path: &#039;/&#039;,
+  getParentRoute: () =&gt; AdminRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: &#039;/blog/$slug&#039;,
+  path: &#039;/blog/$slug&#039;,
+  getParentRoute: () =&gt; rootRouteImport,
+} as any)
+const AdminWriteRoute = AdminWriteRouteImport.update({
+  id: &#039;/write&#039;,
+  path: &#039;/write&#039;,
+  getParentRoute: () =&gt; AdminRoute,
+} as any)
+
+export interface FileRoutesByFullPath {
+  &#039;/&#039;: typeof IndexRoute
+  &#039;/about&#039;: typeof AboutRoute
+  &#039;/admin&#039;: typeof AdminRouteWithChildren
+  &#039;/contact&#039;: typeof ContactRoute
+  &#039;/projects&#039;: typeof ProjectsRoute
+  &#039;/skills&#039;: typeof SkillsRoute
+  &#039;/unlock&#039;: typeof UnlockRoute
+  &#039;/admin/write&#039;: typeof AdminWriteRoute
+  &#039;/blog/$slug&#039;: typeof BlogSlugRoute
+  &#039;/admin/&#039;: typeof AdminIndexRoute
+  &#039;/blog/&#039;: typeof BlogIndexRoute
+}
+export interface FileRoutesByTo {
+  &#039;/&#039;: typeof IndexRoute
+  &#039;/about&#039;: typeof AboutRoute
+  &#039;/contact&#039;: typeof ContactRoute
+  &#039;/projects&#039;: typeof ProjectsRoute
+  &#039;/skills&#039;: typeof SkillsRoute
+  &#039;/unlock&#039;: typeof UnlockRoute
+  &#039;/admin/write&#039;: typeof AdminWriteRoute
+  &#039;/blog/$slug&#039;: typeof BlogSlugRoute
+  &#039;/admin&#039;: typeof AdminIndexRoute
+  &#039;/blog&#039;: typeof BlogIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  &#039;/&#039;: typeof IndexRoute
+  &#039;/about&#039;: typeof AboutRoute
+  &#039;/admin&#039;: typeof AdminRouteWithChildren
+  &#039;/contact&#039;: typeof ContactRoute
+  &#039;/projects&#039;: typeof ProjectsRoute
+  &#039;/skills&#039;: typeof SkillsRoute
+  &#039;/unlock&#039;: typeof UnlockRoute
+  &#039;/admin/write&#039;: typeof AdminWriteRoute
+  &#039;/blog/$slug&#039;: typeof BlogSlugRoute
+  &#039;/admin/&#039;: typeof AdminIndexRoute
+  &#039;/blog/&#039;: typeof BlogIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | &#039;/&#039;
+    | &#039;/about&#039;
+    | &#039;/admin&#039;
+    | &#039;/contact&#039;
+    | &#039;/projects&#039;
+    | &#039;/skills&#039;
+    | &#039;/unlock&#039;
+    | &#039;/admin/write&#039;
+    | &#039;/blog/$slug&#039;
+    | &#039;/admin/&#039;
+    | &#039;/blog/&#039;
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | &#039;/&#039;
+    | &#039;/about&#039;
+    | &#039;/contact&#039;
+    | &#039;/projects&#039;
+    | &#039;/skills&#039;
+    | &#039;/unlock&#039;
+    | &#039;/admin/write&#039;
+    | &#039;/blog/$slug&#039;
+    | &#039;/admin&#039;
+    | &#039;/blog&#039;
+  id:
+    | &#039;__root__&#039;
+    | &#039;/&#039;
+    | &#039;/about&#039;
+    | &#039;/admin&#039;
+    | &#039;/contact&#039;
+    | &#039;/projects&#039;
+    | &#039;/skills&#039;
+    | &#039;/unlock&#039;
+    | &#039;/admin/write&#039;
+    | &#039;/blog/$slug&#039;
+    | &#039;/admin/&#039;
+    | &#039;/blog/&#039;
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  ContactRoute: typeof ContactRoute
+  ProjectsRoute: typeof ProjectsRoute
+  SkillsRoute: typeof SkillsRoute
+  UnlockRoute: typeof UnlockRoute
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogIndexRoute: typeof BlogIndexRoute
+}
+
+declare module &#039;@tanstack/react-router&#039; {
+  interface FileRoutesByPath {
+    &#039;/unlock&#039;: {
+      id: &#039;/unlock&#039;
+      path: &#039;/unlock&#039;
+      fullPath: &#039;/unlock&#039;
+      preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/skills&#039;: {
+      id: &#039;/skills&#039;
+      path: &#039;/skills&#039;
+      fullPath: &#039;/skills&#039;
+      preLoaderRoute: typeof SkillsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/projects&#039;: {
+      id: &#039;/projects&#039;
+      path: &#039;/projects&#039;
+      fullPath: &#039;/projects&#039;
+      preLoaderRoute: typeof ProjectsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/contact&#039;: {
+      id: &#039;/contact&#039;
+      path: &#039;/contact&#039;
+      fullPath: &#039;/contact&#039;
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/admin&#039;: {
+      id: &#039;/admin&#039;
+      path: &#039;/admin&#039;
+      fullPath: &#039;/admin&#039;
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/about&#039;: {
+      id: &#039;/about&#039;
+      path: &#039;/about&#039;
+      fullPath: &#039;/about&#039;
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/&#039;: {
+      id: &#039;/&#039;
+      path: &#039;/&#039;
+      fullPath: &#039;/&#039;
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/blog/&#039;: {
+      id: &#039;/blog/&#039;
+      path: &#039;/blog&#039;
+      fullPath: &#039;/blog/&#039;
+      preLoaderRoute: typeof BlogIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/admin/&#039;: {
+      id: &#039;/admin/&#039;
+      path: &#039;/&#039;
+      fullPath: &#039;/admin/&#039;
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    &#039;/blog/$slug&#039;: {
+      id: &#039;/blog/$slug&#039;
+      path: &#039;/blog/$slug&#039;
+      fullPath: &#039;/blog/$slug&#039;
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    &#039;/admin/write&#039;: {
+      id: &#039;/admin/write&#039;
+      path: &#039;/write&#039;
+      fullPath: &#039;/admin/write&#039;
+      preLoaderRoute: typeof AdminWriteRouteImport
+      parentRoute: typeof AdminRoute
+    }
+  }
+}
+
+interface AdminRouteChildren {
+  AdminWriteRoute: typeof AdminWriteRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminWriteRoute: AdminWriteRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
+  ContactRoute: ContactRoute,
+  ProjectsRoute: ProjectsRoute,
+  SkillsRoute: SkillsRoute,
+  UnlockRoute: UnlockRoute,
+  BlogSlugRoute: BlogSlugRoute,
+  BlogIndexRoute: BlogIndexRoute,
+}
+export const routeTree = rootRouteImport
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes&lt;FileRouteTypes&gt;()
+
+import type { getRouter } from &#039;./router.tsx&#039;
+import type { createStart } from &#039;@tanstack/react-start&#039;
+declare module &#039;@tanstack/react-start&#039; {
+  interface Register {
+    ssr: true
+    router: Awaited&lt;ReturnType&lt;typeof getRouter&gt;&gt;
+  }
+}
+</code></pre>
+    <h2>File: src/styles.css</h2>
+    <pre><code>@import &quot;tailwindcss&quot;;
+
+/* ═══════════════════════════════════════════════════════
+   CYBERPUNK BREADBOARD PORTFOLIO — DESIGN TOKENS
+   ═══════════════════════════════════════════════════════ */
+
+@theme {
+  /* ─── Palette ─── */
+  --color-background: oklch(96.5% 0.012 80);       /* warm off-white paper #f4efe6 */
+  --color-foreground: oklch(18% 0.02 40);          /* deep ink #1a1512 */
+  --color-muted: oklch(92% 0.008 80);              /* faded paper */
+  --color-muted-foreground: oklch(55% 0.015 60);   /* muted text */
+
+  --color-accent-rust: oklch(58% 0.16 42);         /* #c8461a rust orange */
+  --color-accent-red: oklch(62% 0.24 27);          /* #e60000 bright red */
+  --color-accent-blue: oklch(52% 0.24 265);        /* #1a5fff bright blue */
+
+  --color-pcb-green: oklch(42% 0.12 155);          /* breadboard base */
+  --color-copper: oklch(62% 0.10 60);              /* traces/pads */
+
+  --color-oled-bg: oklch(12% 0.005 240);           /* OLED dark screen */
+  --color-oled-cyan: oklch(78% 0.15 195);          /* OLED pixel cyan */
+  --color-oled-green: oklch(72% 0.18 145);         /* OLED terminal green */
+
+  /* ─── LED Glow Shadows ─── */
+  --shadow-led-red: 0 0 8px 2px oklch(62% 0.24 27 / 0.6);
+  --shadow-led-blue: 0 0 8px 2px oklch(52% 0.24 265 / 0.6);
+  --shadow-led-rust: 0 0 8px 2px oklch(58% 0.16 42 / 0.6);
+  --shadow-led-cyan: 0 0 8px 2px oklch(78% 0.15 195 / 0.6);
+
+  /* ─── Typography ─── */
+  --font-display: &quot;Press Start 2P&quot;, monospace;     /* dot-matrix LED headings */
+  --font-terminal: &quot;Courier Prime&quot;, &quot;Courier New&quot;, monospace; /* typewriter terminal */
+  --font-mono: &quot;Share Tech Mono&quot;, monospace;         /* small caps / meta labels */
+  --font-body: &quot;Inter&quot;, sans-serif;                  /* body prose */
+
+  /* ─── Spacing / Layout ─── */
+  --rail-width: 220px;
+  --content-max-w: 720px;
+  --mobile-bar-h: 40px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Theme Variants (toggle switch easter egg) ─── */
+[data-theme=&quot;blue&quot;] {
+  --color-accent-rust: oklch(52% 0.24 265);
+  --shadow-led-rust: 0 0 8px 2px oklch(52% 0.24 265 / 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════
+   DOT-MATRIX &amp; DISPLAY EFFECTS
+   ═══════════════════════════════════════════════════════ */
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.97; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* ─── LED Glow Pulse ─── */
+@keyframes pulse-glow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 4px currentColor); }
+  50% { filter: brightness(1.3) drop-shadow(0 0 12px currentColor); }
+}
+
+/* ─── LED Blink (staggered) ─── */
+@keyframes led-blink-slow {
+  0%, 45%, 100% { opacity: 0.3; }
+  50%, 95% { opacity: 1; }
+}
+
+/* ─── Electron Flow ─── */
+@keyframes electron-flow {
+  0% { transform: translateY(-20px); }
+  100% { transform: translateY(calc(100vh + 20px)); }
+}
+
+/* ─── Current Trace ─── */
+@keyframes trace-flow {
+  0% { stroke-dashoffset: 20; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* ─── Spin ─── */
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ─── OLED Frame Cycle ─── */
+@keyframes oled-cycle {
+  0%, 24% { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+/* ─── Button Press ─── */
+@keyframes led-flash {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* ─── Gentle float ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ─── Fade in up ─── */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Typing cursor blink ─── */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* ─── Subtle shimmer for accents ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ─── Glow pulse for borders ─── */
+@keyframes border-glow {
+  0%, 100% { border-color: oklch(58% 0.16 42 / 0.3); box-shadow: 0 0 0 0 oklch(58% 0.16 42 / 0); }
+  50% { border-color: oklch(58% 0.16 42 / 0.7); box-shadow: 0 0 20px 0 oklch(58% 0.16 42 / 0.1); }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT SHELL
+   ═══════════════════════════════════════════════════════ */
+
+.shell-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+}
+
+.shell-center {
+  max-width: var(--content-max-w);
+  width: 100%;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ─── Dashed Guidelines ─── */
+.shell-guideline-left {
+  border-left: 1px dashed oklch(55% 0.015 60 / 0.2);
+}
+
+.shell-guideline-right {
+  border-right: 1px dashed oklch(55% 0.015 60 / 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════
+   HERO SECTION
+   ═══════════════════════════════════════════════════════ */
+
+.hero-section {
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 0 2rem;
+}
+
+/* ─── Hero title accent bar ─── */
+.hero-title-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.hero-title-wrapper::before {
+  content: &#039;&#039;;
+  position: absolute;
+  left: 0;
+  top: -12px;
+  width: 48px;
+  height: 3px;
+  background: var(--color-accent-rust);
+  box-shadow: var(--shadow-led-rust);
+}
+
+/* ─── Terminal block ─── */
+.terminal-block {
+  position: relative;
+  background: var(--color-foreground);
+  color: var(--color-oled-green);
+  border: 1px solid oklch(30% 0.01 40);
+  padding: 1.5rem 1.75rem;
+  font-family: var(--font-terminal);
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  max-width: 540px;
+  margin-bottom: 2.5rem;
+  overflow: hidden;
+}
+
+.terminal-block::before {
+  content: &#039;&#039;;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-rust) 0%,
+    var(--color-accent-red) 40%,
+    var(--color-accent-blue) 100%
+  );
+}
+
+/* Scanline overlay for the terminal */
+.terminal-block::after {
+  content: &#039;&#039;;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    oklch(0% 0 0 / 0.06) 2px,
+    oklch(0% 0 0 / 0.06) 4px
+  );
+}
+
+/* ─── Terminal header bar ─── */
+.terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid oklch(30% 0.01 40);
+}
+
+.terminal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.terminal-dot--red { background: oklch(62% 0.24 27); }
+.terminal-dot--yellow { background: oklch(78% 0.18 95); }
+.terminal-dot--green { background: oklch(72% 0.18 145); }
+
+.terminal-header-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: oklch(50% 0.01 240);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-left: auto;
+}
+
+/* ─── Status indicators row ─── */
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  margin: 1rem 0 0.5rem;
+  border-top: 1px dashed oklch(55% 0.015 60 / 0.15);
+}
+
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-muted-foreground);
+}
+
+.status-chip__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-chip__dot--online {
+  background: var(--color-oled-green);
+  box-shadow: 0 0 6px oklch(72% 0.18 145 / 0.6);
+}
+
+.status-chip__dot--accent {
+  background: var(--color-accent-rust);
+  box-shadow: 0 0 6px oklch(58% 0.16 42 / 0.5);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 1023px) {
+  .hero-section {
+    min-height: 65vh;
+    padding-top: 1rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TYPOGRAPHY UTILITIES
+   ═══════════════════════════════════════════════════════ */
+
+.dot-matrix {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.terminal-text {
+  font-family: var(--font-terminal);
+  letter-spacing: 0.02em;
+}
+
+.mono-label {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARD &amp; BUTTON SHARED
+   ═══════════════════════════════════════════════════════ */
+
+.card-brackets {
+  position: relative;
+}
+
+.card-brackets::before,
+.card-brackets::after {
+  content: &#039;&#039;;
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--color-foreground);
+  pointer-events: none;
+  opacity: 0.25;
+  transition: opacity 0.2s ease;
+}
+
+.card-brackets:hover::before,
+.card-brackets:hover::after {
+  opacity: 0.6;
+}
+
+.card-brackets::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.card-brackets::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+/* ─── Staggered fade-in for lists ─── */
+.stagger-fade-in &gt; * {
+  opacity: 0;
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+.stagger-fade-in &gt; *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-fade-in &gt; *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-fade-in &gt; *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-fade-in &gt; *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-fade-in &gt; *:nth-child(5) { animation-delay: 0.5s; }
+.stagger-fade-in &gt; *:nth-child(6) { animation-delay: 0.6s; }
+
+/* ─── Prose (for blog markdown) ─── */
+.prose-cyber {
+  font-family: var(--font-body);
+  line-height: 1.75;
+  color: var(--color-foreground);
+}
+
+.prose-cyber h1,
+.prose-cyber h2,
+.prose-cyber h3,
+.prose-cyber h4 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-foreground);
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.prose-cyber h1 { font-size: 1.75rem; }
+.prose-cyber h2 { font-size: 1.375rem; }
+.prose-cyber h3 { font-size: 1.125rem; }
+
+.prose-cyber p {
+  margin-bottom: 1.25em;
+}
+
+.prose-cyber a {
+  color: var(--color-accent-rust);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-cyber a:hover {
+  color: var(--color-accent-blue);
+}
+
+.prose-cyber code {
+  font-family: var(--font-mono);
+  background: var(--color-muted);
+  padding: 0.125em 0.375em;
+  border-radius: 2px;
+  font-size: 0.875em;
+}
+
+.prose-cyber pre {
+  background: var(--color-foreground);
+  color: var(--color-oled-green);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin: 1.5em 0;
+}
+
+.prose-cyber pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+.prose-cyber blockquote {
+  border-left: 3px solid var(--color-accent-rust);
+  padding-left: 1rem;
+  color: var(--color-muted-foreground);
+  font-style: italic;
+  margin: 1.5em 0;
+}
+
+.prose-cyber img,
+.prose-cyber video {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-muted);
+  margin: 1.5em 0;
+}
+
+.prose-cyber ul,
+.prose-cyber ol {
+  padding-left: 1.5em;
+  margin-bottom: 1.25em;
+}
+
+.prose-cyber li {
+  margin-bottom: 0.375em;
+}
+
+.prose-cyber hr {
+  border: none;
+  border-top: 1px dashed var(--color-muted);
+  margin: 2em 0;
+}
+
+.prose-cyber table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.875rem;
+}
+
+.prose-cyber th,
+.prose-cyber td {
+  border: 1px solid var(--color-muted);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.prose-cyber th {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  background: var(--color-muted);
+}
+</code></pre>
+    <h2>File: package.json</h2>
+    <pre><code>{
+  &quot;name&quot;: &quot;blog-portfolio&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;imports&quot;: {
+    &quot;#/*&quot;: &quot;./src/*&quot;
+  },
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite dev --port 3000&quot;,
+    &quot;generate-routes&quot;: &quot;tsr generate&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;,
+    &quot;test&quot;: &quot;vitest run&quot;,
+    &quot;format&quot;: &quot;biome format&quot;,
+    &quot;lint&quot;: &quot;biome lint&quot;,
+    &quot;check&quot;: &quot;biome check&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@react-three/drei&quot;: &quot;^10.7.7&quot;,
+    &quot;@react-three/fiber&quot;: &quot;^9.6.1&quot;,
+    &quot;@supabase/supabase-js&quot;: &quot;^2.110.0&quot;,
+    &quot;@tailwindcss/vite&quot;: &quot;^4.1.18&quot;,
+    &quot;@tanstack/react-devtools&quot;: &quot;latest&quot;,
+    &quot;@tanstack/react-router&quot;: &quot;latest&quot;,
+    &quot;@tanstack/react-router-devtools&quot;: &quot;latest&quot;,
+    &quot;@tanstack/react-router-ssr-query&quot;: &quot;latest&quot;,
+    &quot;@tanstack/react-start&quot;: &quot;latest&quot;,
+    &quot;@tanstack/router-plugin&quot;: &quot;^1.132.0&quot;,
+    &quot;@types/three&quot;: &quot;^0.185.0&quot;,
+    &quot;@upstash/redis&quot;: &quot;^1.38.0&quot;,
+    &quot;date-fns&quot;: &quot;^4.4.0&quot;,
+    &quot;iron-session&quot;: &quot;^8.0.4&quot;,
+    &quot;lucide-react&quot;: &quot;^0.545.0&quot;,
+    &quot;nitro&quot;: &quot;npm:nitro-nightly@latest&quot;,
+    &quot;react&quot;: &quot;^19.2.0&quot;,
+    &quot;react-dom&quot;: &quot;^19.2.0&quot;,
+    &quot;react-markdown&quot;: &quot;^10.1.0&quot;,
+    &quot;rehype-raw&quot;: &quot;^7.0.0&quot;,
+    &quot;rehype-sanitize&quot;: &quot;^6.0.0&quot;,
+    &quot;remark-gfm&quot;: &quot;^4.0.1&quot;,
+    &quot;tailwindcss&quot;: &quot;^4.1.18&quot;,
+    &quot;three&quot;: &quot;^0.185.1&quot;,
+    &quot;zod&quot;: &quot;^4.4.3&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@biomejs/biome&quot;: &quot;2.4.5&quot;,
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.16&quot;,
+    &quot;@tanstack/devtools-vite&quot;: &quot;latest&quot;,
+    &quot;@tanstack/router-cli&quot;: &quot;^1.132.0&quot;,
+    &quot;@testing-library/dom&quot;: &quot;^10.4.1&quot;,
+    &quot;@testing-library/react&quot;: &quot;^16.3.0&quot;,
+    &quot;@types/node&quot;: &quot;^22.10.2&quot;,
+    &quot;@types/react&quot;: &quot;^19.2.0&quot;,
+    &quot;@types/react-dom&quot;: &quot;^19.2.0&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;^6.0.1&quot;,
+    &quot;jsdom&quot;: &quot;^28.1.0&quot;,
+    &quot;typescript&quot;: &quot;^6.0.2&quot;,
+    &quot;vite&quot;: &quot;^8.0.0&quot;,
+    &quot;vitest&quot;: &quot;^4.1.5&quot;
+  },
+  &quot;pnpm&quot;: {
+    &quot;onlyBuiltDependencies&quot;: [
+      &quot;esbuild&quot;,
+      &quot;lightningcss&quot;
+    ]
+  }
+}
+</code></pre>
+    <h2>File: vite.config.ts</h2>
+    <pre><code>import { defineConfig } from &#039;vite&#039;
+import { devtools } from &#039;@tanstack/devtools-vite&#039;
+
+import { tanstackStart } from &#039;@tanstack/react-start/plugin/vite&#039;
+
+import viteReact from &#039;@vitejs/plugin-react&#039;
+import tailwindcss from &#039;@tailwindcss/vite&#039;
+import { nitro } from &#039;nitro/vite&#039;
+
+const config = defineConfig({
+  resolve: { tsconfigPaths: true },
+  plugins: [
+    devtools(),
+    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    tailwindcss(),
+    tanstackStart(),
+    viteReact(),
+  ],
+})
+
+export default config
+</code></pre>
+    <h2>File: tsconfig.json</h2>
+    <pre><code>{
+  &quot;include&quot;: [&quot;**/*.ts&quot;, &quot;**/*.tsx&quot;],
+  &quot;compilerOptions&quot;: {
+    &quot;target&quot;: &quot;ES2022&quot;,
+    &quot;jsx&quot;: &quot;react-jsx&quot;,
+    &quot;module&quot;: &quot;ESNext&quot;,
+    &quot;paths&quot;: {
+      &quot;#/*&quot;: [&quot;./src/*&quot;],
+      &quot;@/*&quot;: [&quot;./src/*&quot;]
+    },
+    &quot;lib&quot;: [&quot;ES2022&quot;, &quot;DOM&quot;, &quot;DOM.Iterable&quot;],
+    &quot;types&quot;: [&quot;vite/client&quot;],
+
+    /* Bundler mode */
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;allowImportingTsExtensions&quot;: true,
+    &quot;verbatimModuleSyntax&quot;: true,
+    &quot;noEmit&quot;: true,
+
+    /* Linting */
+    &quot;skipLibCheck&quot;: true,
+    &quot;strict&quot;: true,
+    &quot;noUnusedLocals&quot;: true,
+    &quot;noUnusedParameters&quot;: true,
+    &quot;noFallthroughCasesInSwitch&quot;: true,
+    &quot;noUncheckedSideEffectImports&quot;: true
+  }
+}
+</code></pre>
+</body>
+</html>

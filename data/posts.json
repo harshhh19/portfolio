@@ -1,0 +1,16 @@
+[
+  {
+    "slug": "hello-world",
+    "title": "Hello World: Boot sequence initiated",
+    "created_at": "2026-07-04T12:00:00Z",
+    "summary": "Testing the new portfolio and transmission system.",
+    "content": "Initiate transmission sequence...\n\nWelcome to the new system."
+  },
+  {
+    "slug": "building-the-cyberdeck",
+    "title": "Building a Cyberdeck from Scratch",
+    "created_at": "2026-06-15T09:30:00Z",
+    "summary": "A deep dive into the mechanical and electrical design of my latest custom hardware project.",
+    "content": "This is a log about building the cyberdeck. I designed the PCBs using KiCad and 3D printed the enclosure."
+  }
+]
